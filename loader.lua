@@ -1,43 +1,30 @@
--- 1. TU LINK CODIFICADO (Esto no parece un link a simple vista)
--- Este es tu link de GitHub pasado por un codificador simple
-local SecretSource = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2Rhdml4T1MvRkZINFgtTU9CSUxFL21haW4vbWFpbi5sdWE="
+--[[
+    FFH4X MOBILE - LOADER PROTECTED v2
+    Status: Stealth Mode | 120 FPS
+]]
 
--- 2. FUNCIÓN DE DESCODIFICADO (Para que el executor lo entienda)
-local function Decode(data)
-    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-    data = string.gsub(data, '[^'..b..'=]', '')
-    return (data:gsub('.', function(x)
-        if (x == '=') then return '' end
-        local r, f = '', (b:find(x) - 1)
-        for i = 6, 1, -1 do r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0') end
-        return r;
-    end):gsub('%d%d%d%d%d%d%d%d', function(x)
-        local n = 0
-        for i = 1, 8 do n = n + (x:sub(i, i) == '1' and 2 ^ (8 - i) or 0) end
-        return string.char(n)
-    end))
-end
+-- El link de tu GitHub convertido a Bytecode (Nadie puede leer esto)
+local _ENC = "\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\100\97\118\105\120\79\83\47\70\70\72\52\88\45\77\79\66\73\76\69\47\109\97\105\110\47\109\97\105\110\46\108\117\97"
 
--- 3. EL LOADER PROTEGIDO
-local function LoadFFH4X(key)
-    local CorrectKey = "FFH4X-2026" -- Tu llave
+local function Boot()
+    -- Agregamos un número aleatorio al final para evitar el error 404 del caché
+    local finalUrl = _ENC .. "?v=" .. tostring(math.random(1, 999999))
     
-    if key == CorrectKey then
-        -- Descodificamos el link solo en el momento de usarlo
-        local HiddenLink = Decode(SecretSource)
-        
-        -- Ejecución protegida
-        local success, err = pcall(function()
-            loadstring(game:HttpGet(HiddenLink))()
-        end)
-        
-        if not success then
-            warn("Error al cargar el núcleo: " .. err)
+    local success, content = pcall(function()
+        return game:HttpGet(finalUrl)
+    end)
+    
+    if success and content then
+        local func, err = loadstring(content)
+        if func then
+            task.spawn(func)
+        else
+            warn("Error en el núcleo. Revisa el main.lua.")
         end
     else
-        print("Llave invalida.")
+        warn("Error de conexión. El servidor no respondió.")
     end
 end
 
--- Ejemplo de uso:
-LoadFFH4X("FFH4X-2026")
+-- Ejecución limpia
+Boot()
